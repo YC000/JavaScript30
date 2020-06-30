@@ -62,12 +62,75 @@
       background: black;
       position: absolute;
       top: 50%;
+      transform: rotate(90deg);
+      transform-origin: 100%;
+      transition-timing-function: cubic-bezier(0.35, 2.12, 0.58, 1);
+      transition: all 0.05s;
     }
 
   </style>
 
   <script>
+    (function() {
+      const secHand = document.querySelector('.second-hand');
+      const minHand = document.querySelector('.min-hand');
+      const hourHand = document.querySelector('.hour-hand');
 
+      function initHands() {
+        const date = new Date;
+        const sec = date.getSeconds();
+        const min = date.getMinutes();
+        const h = date.getHours();
+
+        const secDeg = ((sec / 60) * 360) + 90;
+        const minDeg = ((min / 60) * 360) + 90;
+        const hDeg = ((h / 12) * 360) + 90;
+
+        secHand.style.transform = `rotate(${secDeg}deg)`;
+        minHand.style.transform = `rotate(${minDeg}deg)`;
+        hourHand.style.transform = `rotate(${hDeg}deg)`;
+      }
+
+      function moveSec() {
+        // the date must be in the function since Date is a single moment in time
+        const date = new Date;
+        const sec = date.getSeconds();
+
+        // change the sec into degree of rotation, with an initial rotation of 90deg (to start at 12:00)
+        const secDeg = ((sec / 60) * 360) + 90;
+
+        // make the rotation into html
+        secHand.style.transform = `rotate(${secDeg}deg)`;
+      }
+
+      function moveMin() {
+        const date = new Date;
+        const min = date.getMinutes();
+
+        // change minute into degree of rotation
+        const minDeg = ((min / 60) * 360) + 90;
+
+        // make rotation into html
+        minHand.style.transform = `rotate(${minDeg}deg)`;
+      }
+
+      function moveH() {
+        const date = new Date;
+        const h = date.getHours();
+
+        // change minute into degree of rotation
+        const hDeg = ((h / 12) * 360) + 90;
+
+        // make rotation into html
+        hourHand.style.transform = `rotate(${hDeg}deg)`;
+      }
+
+      initHands();
+      setInterval(moveSec, 1000);
+      setInterval(moveMin, 60000);
+      setInterval(moveH, 60 * 60000);
+
+    })();
 
   </script>
 </body>
