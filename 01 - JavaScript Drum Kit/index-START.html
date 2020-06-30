@@ -59,55 +59,55 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
-  
-  function transitionAndPlaySound (e) {
-	// add the audio
-	const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
-	
-	// add the transition
-	const keyBox = document.querySelector(`div[data-key="${e.keyCode}"]`);
-	
-	// if either audio or key does not exist: return
-	if (!audio || !keyBox) {
-	  return;
-	}
-	
-	// otherwise play audio
-	// clear out the audio first, so consecutive key press will not wait for the previous one to finish
-	// see here: https://www.w3schools.com/tags/ref_av_dom.asp
-	audio.currentTime = 0;
-	audio.play();
-	
-	// transition by adding css class: playing (this works because of .key class's transition)
-	keyBox.classList.add('playing');
-	
-	// this transition effect will not disappear since we did not remove the playing class. 
-	// do not use a setTimeout here, since we have to modify it both in the css file and the script
-  };
-  
-  function transitionRemove (e) {
-	// remove the transition effect
-	// since there are more than one transition event per key press, take the longest taking event
-	// so that when we remove the whole transition will be completed
-	if (e.propertyName === 'transform') {
-	
-	  // here this is whatever the method is attached to before the dot (so key b/c key.addEventListener)
-	  this.classList.remove('playing');
-	  // e.srcElement.classList.remove('playing');
-	}
-	
-	return;
-  };
-  
-  // get all keys and add a listener for each
-  const allKeys = document.querySelectorAll('.key');
-  allKeys.forEach(function (key) {
-	key.addEventListener('transitionend', transitionRemove)
-  });
-  
-  window.addEventListener('keydown', transitionAndPlaySound);
-  
-  
+  (function(){
+    function transitionAndPlaySound (e) {
+      // add the audio
+      const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+
+      // add the transition
+      const keyBox = document.querySelector(`div[data-key="${e.keyCode}"]`);
+
+      // if either audio or key does not exist: return
+      if (!audio || !keyBox) {
+        return;
+      }
+
+      // otherwise play audio
+      // clear out the audio first, so consecutive key press will not wait for the previous one to finish
+      // see here: https://www.w3schools.com/tags/ref_av_dom.asp
+      audio.currentTime = 0;
+      audio.play();
+
+      // transition by adding css class: playing (this works because of .key class's transition)
+      keyBox.classList.add('playing');
+
+      // this transition effect will not disappear since we did not remove the playing class.
+      // do not use a setTimeout here, since we have to modify it both in the css file and the script
+    }
+
+    function transitionRemove (e) {
+      // remove the transition effect
+      // since there are more than one transition event per key press, take the longest taking event
+      // so that when we remove the whole transition will be completed
+      if (e.propertyName === 'transform') {
+
+        // here this is whatever the method is attached to before the dot (so key b/c key.addEventListener)
+        this.classList.remove('playing');
+        // e.srcElement.classList.remove('playing');
+      }
+
+      // ignore other properties
+    }
+
+    // get all keys and add a listener for each
+    const allKeys = document.querySelectorAll('.key');
+    allKeys.forEach(function (key) {
+      key.addEventListener('transitionend', transitionRemove)
+    });
+
+    window.addEventListener('keydown', transitionAndPlaySound);
+  })();
+
 </script>
 
 
