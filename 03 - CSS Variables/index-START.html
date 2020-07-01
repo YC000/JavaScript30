@@ -21,6 +21,21 @@
   <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
 
   <style>
+    :root {
+      --base: #ffc600;
+      --blur: 0px;
+      --spacing: 10px;
+    }
+
+    img {
+      filter: blur(var(--blur));
+      background: var(--base);
+      padding: var(--spacing);
+    }
+
+    .hl {
+      color: var(--base);
+    }
 
     /*
       misc styles, nothing to do with CSS variables
@@ -45,6 +60,51 @@
   </style>
 
   <script>
+    /*
+    - css variables must have the prefix --
+    - they are called in css by adding var()
+    - the css variables in this file are stored in the root scope (:root)
+    - css variables also have scope and do overwrite each other's effect
+     */
+
+    (() => {
+      // we want inputs in the control class only (it doesn't make a difference here)
+      const inputs = document.querySelectorAll('.controls input');
+
+      function handleChange() {
+        console.log(this)
+        // dataset contains all custom data with data- as prefix attached to the html element
+        // this is to find the unit for blur and padding, e.g. px or rem
+        const unit = this.dataset.sizing || '';
+
+        // documentElement lets us get the root of the document
+        // the variable names are set up to match the input elements' name
+        document.documentElement.style.setProperty(`--${this.name}`, this.value + unit);
+      }
+
+      function handleMouseDown() {
+        // when the input is pressed upon, listen for mouse move event
+        this.addEventListener('mousemove', handleChange);
+      }
+
+      function handleMouseUp() {
+        // when the input is released, stop listening for mouse move event
+        this.removeEventListener('mousemove', handleChange);
+      }
+
+      inputs.forEach(function(key) {
+        // change event is triggered only when the value change on the input element
+        key.addEventListener('change', handleChange);
+
+        // only change does not suffice for the range input, we listen to every mouse move on the element
+        // the following is to not have too many mouse move event
+        // we do not have to deal with those mousemove event when the input is not even clicked on
+        key.addEventListener('mousedown', handleMouseDown);
+        key.addEventListener('mouseup', handleMouseUp);
+      });
+
+    })();
+
   </script>
 
 </body>
