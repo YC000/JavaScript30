@@ -9,7 +9,7 @@
 
   <div class="controls">
     <label for="spacing">Spacing:</label>
-    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+    <input id="spacing" type="range" name="spacing" min="0" max="200" value="10" data-sizing="px">
 
     <label for="blur">Blur:</label>
     <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
@@ -23,7 +23,7 @@
   <style>
     :root {
       --base: #ffc600;
-      --blur: 0px;
+      --blur: 10px;
       --spacing: 10px;
     }
 
@@ -72,7 +72,6 @@
       const inputs = document.querySelectorAll('.controls input');
 
       function handleChange() {
-        console.log(this)
         // dataset contains all custom data with data- as prefix attached to the html element
         // this is to find the unit for blur and padding, e.g. px or rem
         const unit = this.dataset.sizing || '';
