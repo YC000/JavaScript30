@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>JS + CSS Clock</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 
     <div class="clock">
       <div class="clock-face">
@@ -15,123 +15,47 @@
       </div>
     </div>
 
+<script>
+  (function() {
+    const secHand = document.querySelector('.second-hand');
+    const minHand = document.querySelector('.min-hand');
+    const hourHand = document.querySelector('.hour-hand');
 
-  <style>
-    html {
-      background: #018DED url(https://unsplash.it/1500/1000?image=881&blur=5);
-      background-size: cover;
-      font-family: 'helvetica neue';
-      text-align: center;
-      font-size: 10px;
+    function moveHand() {
+      // the date must be in the function since Date is a single moment in time
+      const date = new Date;
+      const sec = date.getSeconds();
+      const min = date.getMinutes();
+      const h = date.getHours();
+
+      // change the sec into degree of rotation, with an initial rotation of 90deg (to start at 12:00)
+      const secDeg = timeToDeg(sec, 60);
+      const minDeg = timeToDeg(min, 60);
+      const hDeg = timeToDeg(h, 12);
+
+      // make rotation into html
+      secHand.style.transform = `rotate(${secDeg}deg)`;
+      minHand.style.transform = `rotate(${minDeg}deg)`;
+      hourHand.style.transform = `rotate(${hDeg}deg)`;
+
+      /*
+      note that the transition-timing-function: cubic-bezier(0.35, 2.12, 0.58, 1); in the .hands class
+      will make a shake-ish motion when the hand reaches 0deg
+      this is because at 450deg it goes forward (for the jerk motion) to 0deg (backward)
+      we can temporarily remove the transition-timing-function, but it is not done here.
+       */
     }
 
-    body {
-      margin: 0;
-      font-size: 2rem;
-      display: flex;
-      flex: 1;
-      min-height: 100vh;
-      align-items: center;
+    function timeToDeg (time, max) {
+      return ((time / max) * 360) + 90;
     }
 
-    .clock {
-      width: 30rem;
-      height: 30rem;
-      border: 20px solid white;
-      border-radius: 50%;
-      margin: 50px auto;
-      position: relative;
-      padding: 2rem;
-      box-shadow:
-        0 0 0 4px rgba(0,0,0,0.1),
-        inset 0 0 0 3px #EFEFEF,
-        inset 0 0 10px black,
-        0 0 10px rgba(0,0,0,0.2);
-    }
+    // initialize hands placement
+    moveHand();
+    // update hands placement
+    setInterval(moveHand, 1000);
+  })();
 
-    .clock-face {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform: translateY(-3px); /* account for the height of the clock hands */
-    }
-
-    .hand {
-      width: 50%;
-      height: 6px;
-      background: black;
-      position: absolute;
-      top: 50%;
-      transform: rotate(90deg);
-      transform-origin: 100%;
-      transition-timing-function: cubic-bezier(0.35, 2.12, 0.58, 1);
-      transition: all 0.05s;
-    }
-
-  </style>
-
-  <script>
-    (function() {
-      const secHand = document.querySelector('.second-hand');
-      const minHand = document.querySelector('.min-hand');
-      const hourHand = document.querySelector('.hour-hand');
-
-      function initHands() {
-        const date = new Date;
-        const sec = date.getSeconds();
-        const min = date.getMinutes();
-        const h = date.getHours();
-
-        const secDeg = ((sec / 60) * 360) + 90;
-        const minDeg = ((min / 60) * 360) + 90;
-        const hDeg = ((h / 12) * 360) + 90;
-
-        secHand.style.transform = `rotate(${secDeg}deg)`;
-        minHand.style.transform = `rotate(${minDeg}deg)`;
-        hourHand.style.transform = `rotate(${hDeg}deg)`;
-      }
-
-      function moveSec() {
-        // the date must be in the function since Date is a single moment in time
-        const date = new Date;
-        const sec = date.getSeconds();
-
-        // change the sec into degree of rotation, with an initial rotation of 90deg (to start at 12:00)
-        const secDeg = ((sec / 60) * 360) + 90;
-
-        // make the rotation into html
-        secHand.style.transform = `rotate(${secDeg}deg)`;
-      }
-
-      function moveMin() {
-        const date = new Date;
-        const min = date.getMinutes();
-
-        // change minute into degree of rotation
-        const minDeg = ((min / 60) * 360) + 90;
-
-        // make rotation into html
-        minHand.style.transform = `rotate(${minDeg}deg)`;
-      }
-
-      function moveH() {
-        const date = new Date;
-        const h = date.getHours();
-
-        // change minute into degree of rotation
-        const hDeg = ((h / 12) * 360) + 90;
-
-        // make rotation into html
-        hourHand.style.transform = `rotate(${hDeg}deg)`;
-      }
-
-      initHands();
-      setInterval(moveSec, 1000);
-      setInterval(moveMin, 60000);
-      setInterval(moveH, 60 * 60000);
-
-    })();
-
-  </script>
+</script>
 </body>
 </html>
