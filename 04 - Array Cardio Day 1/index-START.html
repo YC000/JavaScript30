@@ -27,32 +27,149 @@
       { first: 'Hanna', last: 'Hammarström', year: 1829, passed: 1909 }
     ];
 
+    // last name, first name list
     const people = ['Beck, Glenn', 'Becker, Carl', 'Beckett, Samuel', 'Beddoes, Mick', 'Beecher, Henry', 'Beethoven, Ludwig', 'Begin, Menachem', 'Belloc, Hilaire', 'Bellow, Saul', 'Benchley, Robert', 'Benenson, Peter', 'Ben-Gurion, David', 'Benjamin, Walter', 'Benn, Tony', 'Bennington, Chester', 'Benson, Leana', 'Bent, Silas', 'Bentsen, Lloyd', 'Berger, Ric', 'Bergman, Ingmar', 'Berio, Luciano', 'Berle, Milton', 'Berlin, Irving', 'Berne, Eric', 'Bernhard, Sandra', 'Berra, Yogi', 'Berry, Halle', 'Berry, Wendell', 'Bethea, Erin', 'Bevan, Aneurin', 'Bevel, Ken', 'Biden, Joseph', 'Bierce, Ambrose', 'Biko, Steve', 'Billings, Josh', 'Biondo, Frank', 'Birrell, Augustine', 'Black, Elk', 'Blair, Robert', 'Blair, Tony', 'Blake, William'];
 
-    // Array.prototype.filter()
-    // 1. Filter the list of inventors for those who were born in the 1500's
+    /******************
+     * Array.prototype.filter()
+     * 1. Filter the list of inventors for those who were born in the 1500's
+     * ****************/
 
-    // Array.prototype.map()
-    // 2. Give us an array of the inventors first and last names
+    // filter gives back an array with smaller length than the original array
+    const born_1500 = inventors.filter((inventor) => inventor.year >= 1500 && inventor.year < 1600);
 
-    // Array.prototype.sort()
-    // 3. Sort the inventors by birthdate, oldest to youngest
+    // give back a table
+    console.table(born_1500);
 
-    // Array.prototype.reduce()
-    // 4. How many years did all the inventors live all together?
+    /******************
+     * Array.prototype.map()
+     * 2. Give us an array of the inventors first and last names
+     * ****************/
 
-    // 5. Sort the inventors by years lived
+    /*
+    map gives back an array of the same length as the original array
+    think of map as a factory, that only stamp qualified items
+     */
+    const first_last_names = inventors.map((inventor) => `${inventor.first} ${inventor.last}`);
 
-    // 6. create a list of Boulevards in Paris that contain 'de' anywhere in the name
-    // https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris
+    console.table(first_last_names);
+
+    /******************
+     * Array.prototype.sort()
+     * 3. Sort the inventors by birth date, oldest to youngest
+     * ****************/
+
+    /*
+    sort need a callback function to determine the order of the two elements.
+    the 1st argument starts with the 2nd element, the 2nd argument starts with the 1st element
+    they are compared a bit like bubble sort
+    returning a -ve number means smaller (1st argument comes first), +ve means bigger (2nd argument comes first)
+     */
+    const oldest_to_youngest = inventors.sort((a, b) => a.year > b.year? 1: -1);
+
+    /*
+    Can also do:
+    const inventors_by_date = inventors.sort(({year: a}, {year: b}) => a - b);
+    since it will calculate the returning number for us
+    */
+
+    console.table(oldest_to_youngest);
+
+    /******************
+     * Array.prototype.reduce()
+     * 4. How many years did all the inventors live all together?
+     * ****************/
+
+    /*
+    reduce takes a callback with 2 arguments:
+      1. accumulator (previous value gets stored here)
+      2. current value (the object to calculate the value to add)
+    the callback performs the action of combining the accumulator and the current value, and returns the result
+    (in this case it's just adding)
+
+    and optionally takes the initial value of the accumulator
+     */
+
+    // the reduce can be written as the for loop:
+    let living_years_for_loop = 0;
+
+    for (let i = 0; i < inventors.length; i++){
+      living_years_for_loop += inventors[i].passed - inventors[i].year;
+    }
+    console.log("total living years using for loop:", living_years_for_loop);
+
+    // using reduce:
+    const living_years = inventors.reduce((year, inventor) => year + (inventor.passed - inventor.year), 0);
+
+    console.log("total living years using reduce", living_years);
+
+    /******************
+     * 5. Sort the inventors by years lived (longest first)
+     * ****************/
+
+    const years_lived_sort = inventors.sort((a, b) => {
+      const a_age = a.passed - a.year;
+      const b_age = b.passed - b.year;
+
+      return a_age > b_age ? -1: 1;
+    })
+
+    console.table(years_lived_sort);
+
+    /******************
+     * 6. create a list of Boulevards in Paris that contain 'de' anywhere in the name
+     * https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris
+     * on browser only
+     * ****************/
+
+    /*
+    can also do
+
+    let boulevards = document.querySelector('.mw-category');
+    let boulevards_link = boulevards.querySelectorAll('a');
+
+    since querySelector can be used on any elements, not only documents
+     */
 
 
-    // 7. sort Exercise
-    // Sort the people alphabetically by last name
+    // let boulevards_nodes = document.querySelectorAll('.mw-category a');
+    // let boulevards_array = Array.from(boulevards_nodes);  // creates an array from a nodeList in order to use functions
+    //
+    // // chaining, simply use filter here will only return array of a (link) elements, not the text itself
+    // const de = boulevards_array
+    //         .map(boulevard => boulevard.textContent)
+    //         .filter(boulevard_name => boulevard_name.includes('de'));
 
-    // 8. Reduce Exercise
-    // Sum up the instances of each of these
+    /******************
+     * 7. sort Exercise
+     * Sort the people alphabetically by last name
+     * ****************/
+
+    const alpha_last_name = people.sort((a, b) => {
+      const [a_last, a_first] = a.split(', ');
+      const [b_last, b_first] = b.split(', ');
+
+      return a_last < b_last ? -1: 1;
+    })
+
+    console.log(alpha_last_name);
+
+    /******************
+     * 8. Reduce Exercise
+     * Sum up the instances of each of these
+     * ****************/
+
     const data = ['car', 'car', 'truck', 'truck', 'bike', 'walk', 'car', 'van', 'bike', 'walk', 'car', 'van', 'car', 'truck' ];
+
+    const sum = data.reduce((prev_val_obj, instance) => {
+      if (!prev_val_obj.hasOwnProperty(instance)) {
+        prev_val_obj[instance] = 0;
+      }
+      prev_val_obj[instance] ++;
+      return prev_val_obj;
+    }, {});
+
+    console.log(sum);
 
   </script>
 </body>
