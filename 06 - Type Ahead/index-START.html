@@ -15,8 +15,70 @@
     </ul>
   </form>
 <script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  (() => {
+    const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
+    let cities = [];
+    const inputSearch = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
+
+    function findMatches(searchString, cities) {
+      // using RegExp here because we are searching for a variable
+      // gi <=> search globally and insensitive
+      const regex = new RegExp(searchString, 'gi');
+
+      return cities.filter(location => location.city.match(regex) || location.state.match(regex));
+    }
+
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function displayMatches() {
+      const searchString = this.value;
+      console.log(searchString);
+
+      const regex = new RegExp(searchString, 'gi');
+
+      // find matched locations and sort ascending by population
+      const matchedLocations = findMatches(searchString, cities)
+              .sort((a, b) => a.population > b.population ? -1: 1);
+
+      // add html to display
+      const matchedLocationsHtmlArray = matchedLocations.map(location => {
+        // add comma to the number of population
+        const population = numberWithCommas(location.population);
+
+        // highlight the searched part
+        // i.e. replace every found part with a highlighted span
+        const cityName = location.city.replace(
+                regex,
+                `<span class="hl">${searchString}</span>`);
+
+        const stateName = location.state.replace(
+                regex,
+                `<span class="hl">${searchString}</span>`);
+
+        return `
+            <li>
+                <span>${cityName}, ${stateName}</span>
+                <span class="population">${population}</span>
+            </li>`
+      });
+
+      // replace the real list
+      suggestions.innerHTML = matchedLocationsHtmlArray.join("");
+    }
+
+    // get data from endpoint link
+    fetch(endpoint)
+    .then(data => data.json())
+    .then(jsonData => cities = jsonData);
+
+    // event listener
+    inputSearch.addEventListener('keyup', displayMatches);
+
+  })();
 </script>
 </body>
 </html>
