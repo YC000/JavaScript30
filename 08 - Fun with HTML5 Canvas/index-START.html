@@ -15,5 +15,82 @@
   }
 </style>
 
+<script>
+  (() => {
+    const canvas = document.getElementById('draw');
+    const canvasContext = canvas.getContext('2d');
+
+    // set canvas the size of the screen
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // set initial parameters
+    const maxLineWidth = 200;
+    const minLineWidth = 1;
+    let lineWidthDirection = true;  // true => grow bigger, false => smaller
+    let startX = 0;
+    let startY = 0;
+    let hue = 0;
+    let isDrawing = false;
+
+    // set brush's initial parameters
+    canvasContext.lineWidth = 10;
+    canvasContext.lineCap = "round"; // "butt" | "round" | "square"
+    canvasContext.lineJoin = "round"; // "bevel" | "miter" | "round"
+    canvasContext.strokeStyle = "red"; // define the color, gradient, or pattern used for strokes.
+    canvasContext.globalCompositeOperation = 'difference';    // determine how the colors overlap each other
+
+    // the function to draw
+    function drawing(e) {
+      if (!isDrawing) return;   // only draw if the mouse is clicked down
+
+      // set the new color with hsl (hue, saturation, lightness):
+      canvasContext.strokeStyle = `hsl(${hue}, 90%, 50%)`;
+      canvasContext.beginPath();
+      // start the stroke from:
+      canvasContext.moveTo(startX, startY);
+      // finish the stroke at: (event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas)
+      canvasContext.lineTo(e.offsetX, e.offsetY);
+      // do the stroke:
+      canvasContext.stroke();
+
+      // update the next starting positions (to make a continuous line)
+      [startX, startY] = [e.offsetX, e.offsetY];
+
+      // update the hue (the range is 0 to 360, there is no problem going over, but just to be clear)
+      if (hue >= 360) hue = 0;
+      hue ++;
+
+      // update the size of the stroke
+      if (canvasContext.lineWidth >= maxLineWidth || canvasContext.lineWidth <= minLineWidth) {
+        lineWidthDirection = !lineWidthDirection;   // flip the direction
+      }
+
+      if (lineWidthDirection) {
+        canvasContext.lineWidth ++;
+      } else {
+        canvasContext.lineWidth --;
+      }
+    }
+
+    function startDraw(e) {
+      isDrawing = true;
+
+      // event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas
+      startX = e.offsetX;
+      startY = e.offsetY;
+    }
+
+    function endDraw() {
+      isDrawing = false;
+    }
+
+    // add event listener
+    canvas.addEventListener('mousemove', drawing);
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseout', endDraw);
+  })();
+</script>
 </body>
 </html>
