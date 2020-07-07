@@ -7,6 +7,29 @@
 </head>
 <body>
 <script>
+  (() => {
+    const secretKey = '12';
+    let pastKeyPress = [];
+
+    function detectSecretKey(e) {
+      // e.key stores what you just pressed
+      pastKeyPress.push(e.key);
+
+      // only store the number of key press equal to the secretKey length
+      // delete from the end => -ve index (can also use splice)
+      pastKeyPress = pastKeyPress.slice(-(secretKey.length));
+
+      // console.log(pastKeyPress);
+
+      // search if the secret key is pressed
+      if (pastKeyPress.join("").includes(secretKey)) {
+        cornify_add();  // this uses the script at https://www.cornify.com/js/cornify.js
+      }
+    }
+
+    document.addEventListener('keydown', detectSecretKey);
+  })();
+
 </script>
 </body>
 </html>

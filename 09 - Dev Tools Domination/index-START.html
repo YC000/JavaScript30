@@ -11,6 +11,8 @@
   <script>
     const dogs = [{ name: 'Snickers', age: 2 }, { name: 'hugo', age: 8 }];
 
+    // to find out where the javascript execute:
+    // inspect -> right click -> break on -> attributes modifications
     function makeGreen() {
       const p = document.querySelector('p');
       p.style.color = '#BADA55';
@@ -18,28 +20,64 @@
     }
 
     // Regular
+    console.log('regular');
 
     // Interpolated
+    const interpolated = true;
+    console.log(`interpolated? ${interpolated}`);
 
     // Styled
+    // a console.log can be styled when there is a %c in front of the string
+    console.log("%c this one is styled", "font-size: 100px; background: red");
 
     // warning!
+    console.warn('warning in console...');
 
     // Error :|
+    console.error('error in console...');
 
     // Info
+    console.info('info in console...');
 
     // Testing
+    // assert will only run the 2nd argument when the 1st evaluated to false
+    console.assert(interpolated, "interpolated");
+    console.assert(!interpolated, "not interpolated");
 
     // clearing
+    // lol do this at the end of the document... and you won't see another day
+    console.clear();
 
     // Viewing DOM Elements
+    // console.log will not expand, but console.dir will so you can see all methods
+    console.dir(document.querySelector('p'));
 
     // Grouping together
+    dogs.forEach(dog => {
+      // group the logs together
+      // use console.groupCollapsed() for a condensed log
+      console.group(`${dog.name}`);
+      console.log("name is:", dog.name);
+      console.log("age is:", dog.age);
+      console.groupEnd();
+    })
 
     // counting
+    console.count('here');
+    console.count('here');
 
     // timing
+    // calculate how long a function runs
+    console.time('timing fetch');
+    fetch('https://api.github.com/users/wesbos')
+      .then(data => data.json())
+      .then(data => {
+        console.timeEnd('timing fetch');
+      });
+
+    // table
+    // use when an array contains objects with same property
+    console.table(dogs);
 
   </script>
 </body>
