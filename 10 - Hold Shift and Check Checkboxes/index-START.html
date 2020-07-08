@@ -53,8 +53,9 @@
    <!--
    The following is a common layout you would see in an email client.
 
-   When a user clicks a checkbox, holds Shift, and then clicks another checkbox a few rows down, all the checkboxes inbetween those two checkboxes should be checked.
-
+   When a user clicks a checkbox, holds Shift,
+   and then clicks another checkbox a few rows down,
+   all the checkboxes in between those two checkboxes should be checked.
   -->
   <div class="inbox">
     <div class="item">
@@ -96,6 +97,59 @@
   </div>
 
 <script>
+  // wrap everything in an IIFE to avoid polluting the global namespace
+  (() => {
+    const checkboxes = document.querySelectorAll('.inbox input[type=checkbox]');
+
+    // this variable records the last checkbox checked
+    let lastCheckedCheckbox;
+
+    /*
+    Note that this does not handle the shift + uncheck case
+    */
+    function handleCheck(e) {
+      let inBetween = false;  // flag checkboxes that are in between the two selected
+
+      // only trigger the effect when the user has pressed shift
+      // AND checking the current (the user might be unchecking it)
+      // AND the last checked checkbox exists (the first time the user checks something)
+      // AND the last checked checkbox is checked (the user might try to uncheck)
+      if (e.shiftKey && this.checked &&
+              lastCheckedCheckbox && lastCheckedCheckbox.checked) {
+        /*
+        scan through the all the checkboxes
+        if the checkbox selected using shift is below the initial one:
+         the checkboxes in between last checked checkbox (initial)
+         and the current checkbox (shift) should be checked, i.e. inBetween = true
+         when the loop reaches after the current checkbox (shift)
+         the rest of the checkboxes should not be checked, i.e. inBetween = false
+         which leads to the flip of flag
+        if the checkbox selected using shift is above the initial one:
+         the checkboxes in between the current checkbox (shift)
+         and the last checked checkbox (initial) should be checked
+         (i.e. reverse order compared to the previous case)
+        */
+
+        checkboxes.forEach(checkbox => {
+          if (checkbox === this || checkbox === lastCheckedCheckbox) {
+            inBetween = !inBetween;
+          }
+
+          if (inBetween) {
+            // check the checkbox
+            checkbox.checked = true;
+          }
+        });
+      }
+
+      lastCheckedCheckbox = this;
+    }
+
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('click', handleCheck);
+    });
+
+  })();
 </script>
 </body>
 </html>
