@@ -43,21 +43,64 @@
   </div>
 
   <script>
-    function debounce(func, wait = 20, immediate = true) {
-      var timeout;
-      return function() {
-        var context = this, args = arguments;
-        var later = function() {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
+    (() => {
+      /*
+      A debounce function is used to optimize the performance.
+      It ensures that the function is not triggered by an event (resize window, scroll, etc.) continuously
+      by limiting the rate the function can fire.
+      The function will only be called after it stops being called for N=wait milliseconds
+      (note that if it is called non stopped it will not be triggered)
+      https://davidwalsh.name/javascript-debounce-function
+       */
+      function debounce(func, wait = 20, immediate = true) {
+        var timeout;
+        return function() {
+          var context = this, args = arguments;
+          var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          var callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
         };
-        var callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
-      };
-    }
+      }
 
+      const images = document.querySelectorAll('.slide-in');
+
+      function slideInImageOnScroll() {
+        /*
+        We want the images to slide in when the user scrolls to half the image, and slide out when they reach the bottom
+         */
+
+        // window.scrollY is where the top of the screen is
+        const bottomOfScreen = window.innerHeight + window.scrollY;
+
+        images.forEach(image => {
+          // where the image should start to slide in (/2 because half height) in terms of height in page
+          const slideInAt = bottomOfScreen - image.height / 2;
+
+          // bottom of the image in terms of height in page
+          // image.offsetTop = number of pixels from the top of the closest relatively positioned parent element
+          const imgBottom = image.height + image.offsetTop;
+
+          // flag denoting whether the user scrolled past the half of the image
+          const isHalfShown = slideInAt > image.offsetTop;
+
+          // flag denoting whether the user scrolled past the image entirely
+          const shouldSlideOut = window.scrollY > imgBottom;
+
+          if (isHalfShown && !shouldSlideOut) {
+            image.classList.add("active");
+          } else {
+            image.classList.remove("active");
+          }
+        });
+      }
+
+      window.addEventListener('scroll', debounce(slideInImageOnScroll));
+    })();
   </script>
 
   <style>
