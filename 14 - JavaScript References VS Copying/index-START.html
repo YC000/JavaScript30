@@ -7,6 +7,11 @@
 <body>
 
   <script>
+    /**************
+     * Strings, Numbers and Booleans (or any primitive types including NULL and undefined): copy by value
+     * Array and Object: copy by reference
+     **************/
+
     // start with strings, numbers and booleans
 
     // Let's say we have an array
@@ -27,12 +32,22 @@
     // So, how do we fix this? We take a copy instead!
 
     // one way
+    let players_copy1 = players.slice();
 
     // or create a new array and concat the old one in
+    let players_copy2 = [].concat(players);
 
     // or use the new ES6 Spread
+    let players_copy3 = [...players];
 
     // now when we update it, the original one isn't changed
+    players_copy1[0] = 'Bob';
+    players_copy2[0] = 'Alex';
+    players_copy3[0] = 'Mary';
+    console.log(players);
+    console.log(players_copy1);
+    console.log(players_copy2);
+    console.log(players_copy3);
 
     // The same thing goes for objects, let's say we have a person object
 
@@ -45,10 +60,42 @@
     // and think we make a copy:
 
     // how do we take a copy instead?
+    let person_copy1 = Object.assign({}, person, {age: 82});
+    console.log(person);
+    console.log(person_copy1);
 
     // We will hopefully soon see the object ...spread
 
     // Things to note - this is only 1 level deep - both for Arrays and Objects. lodash has a cloneDeep method, but you should think twice before using it.
+    const original_obj = {
+      name: 'original',
+      lvl: {
+        lvl1: 'lvl1',
+        lvl2: 2
+      }
+    };
+
+    let obj_cp1 = Object.assign({}, original_obj);
+    obj_cp1.lvl.lvl3 = 3;
+
+    console.log(obj_cp1);
+    console.log(original_obj);
+
+    // deep clone using JSON: unknown performance (make the obj into a string then back to an obj)
+
+    const original_obj2 = {
+      name: 'original2',
+      lvl: {
+        lvl1: 'lvl1',
+        lvl2: 2
+      }
+    };
+
+    let obj_cp2 = JSON.parse(JSON.stringify(original_obj2));
+    obj_cp2.lvl.lvl3 = '3';
+
+    console.log(obj_cp2);
+    console.log(original_obj2);
 
   </script>
 
