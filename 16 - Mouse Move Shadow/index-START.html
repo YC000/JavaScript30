@@ -35,6 +35,48 @@
   </style>
 
 <script>
+  (() => {
+    const hero = document.querySelector('.hero');
+    const text = hero.querySelector('h1');
+    const walk = 100; // 100 px (walk is the max length of shadow)
+
+    function moveShadow(e) {
+
+      const width = hero.offsetWidth;
+      const height = hero.offsetHeight;
+
+      // this is the offset of the element that dispatched the event.
+      let x = e.offsetX;
+      let y = e.offsetY;
+
+      /*
+      Note that even though the event listener is attached to hero (this),
+      the target is the element / object that dispatch the event (e.g. h1)
+
+      This may cause offsetX=0 when the element (h1 here) is within this (hero)
+      even though we do not want offsetX=0 (i.e. w.r.t. h1) but offsetX w.r.t. window
+       */
+      if (this !== e.target) {
+        // The HTMLElement.offsetLeft read-only property returns
+        // the number of pixels that the upper left corner of the current element
+        // is offset to the left within the HTMLElement.offsetParent node.
+        x += e.target.offsetLeft;
+        y += e.target.offsetTop;
+      }
+
+      /*
+      Calculate the stretch distance of the shadow on the x, y axis
+      Here the walk is from -50 to 50 (not 0 to 100) to get an all direction shadow
+       */
+      const x_shadow = Math.round((x / width) * walk - walk / 2);
+      const y_shadow = Math.round((y / height) * walk - walk / 2);
+
+      // text shadow => x, y, blur, color
+      text.style.textShadow = `${x_shadow}px ${y_shadow}px 0 red`;
+    }
+
+    hero.addEventListener('mousemove', moveShadow);
+  })();
 </script>
 </body>
 </html>
