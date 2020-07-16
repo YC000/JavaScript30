@@ -182,6 +182,29 @@
     </li>
   </ul>
 <script>
+  (() => {
+    const timeArr = Array.from(document.querySelectorAll('[data-time'));
+
+    let totalSec = timeArr.reduce((accTime, currElement) => {
+      // get the time attribute
+      const currTimeStr = currElement.dataset.time;
+
+      // transform a time in string format to minutes and secs
+      const [min, sec] = currTimeStr.split(":").map(parseFloat);
+
+      return accTime + min * 60 + sec;
+    }, 0);
+
+    // deconstruct into hours, minutes, seconds
+    const hours = Math.floor(totalSec / 3600);
+    totalSec = totalSec % 3600;
+
+    const minutes = Math.floor(totalSec / 60);
+    totalSec = totalSec % 60;
+
+    console.log(hours, minutes, totalSec);
+  })();
+
 </script>
 </body>
 </html>
