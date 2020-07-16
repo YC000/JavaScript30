@@ -26,9 +26,86 @@
   </div>
 
 <script>
-  const addItems = document.querySelector('.add-items');
-  const itemsList = document.querySelector('.plates');
-  const items = [];
+
+  (() => {
+    const addItemForm = document.querySelector('.add-items');
+    const itemsList = document.querySelector('.plates');
+    const items = JSON.parse(localStorage.getItem("items")) || [];
+
+    function addItem(e) {
+      // forms auto-reloads when submitted (to send to the server side)
+      // as the default action
+      // we need to prevent this auto-reload by canceling the operation
+      e.preventDefault();
+
+      // get the value from the input
+      // here this is addItemForm
+      const newItemVal = (this.querySelector("[name=item]")).value;
+
+      const newItemObj = {
+        text: newItemVal,
+        done: false
+      };
+
+      items.push(newItemObj);
+
+      // store the list into local storage
+      // we need JSON.stringify since local storage is just pairs of key value pair
+      // and the object would be converted to a string if we did not stringify it
+      localStorage.setItem('items', JSON.stringify(items));
+
+      populateList(items);
+
+      // reset the form (not necessary) resets the values of all elements in a form
+      e.target.reset();
+    }
+
+    function populateList(items = []) {
+      // update the list displayed
+      itemsList.innerHTML = items.map((item, i) => {
+        // there is no checked="false" in html (it would still count as checked)
+        const checked = item.done ? 'checked' : '';
+
+        // data-index here is to facilitate retrieval, id is to link with label
+        return `
+        <li>
+            <input type="checkbox" data-index=${i} id="item${i}" ${checked} />
+            <label for="item${i}">${item.text}</label>
+        </li>
+      `;
+      }).join('');
+    }
+
+    function listChange(e) {
+      // do not need changes other than on the input (or its corresponding label)
+      if (!e.target.matches("input")) return;
+
+      const index = e.target.dataset.index;
+      items[index].done = !items[index].done;
+
+      // propagate changes into local storage
+      localStorage.setItem('items', JSON.stringify(items));
+
+      // propagate changes to the front-end
+      populateList(items);
+    }
+
+    // use submit event instead of click event on button to cover
+    // keypress of enter or other input form
+    addItemForm.addEventListener('submit', addItem);
+
+    /*
+    Event delegation
+    Do not listen directly to the individual li elements
+    since the elements are re-created every time a new one comes in.
+    In event delegation choose an unchanging parent to be responsible of listening
+    and this parent should tell the irresponsible children to adapt to the changes
+     */
+    itemsList.addEventListener('click', listChange);
+
+    // populate list with data from local storage as soon as the document loads
+    document.onload = populateList(items);
+  })();
 
 </script>
 
