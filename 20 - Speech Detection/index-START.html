@@ -10,8 +10,72 @@
   </div>
 
 <script>
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  /*
+  ATTENTION:
+  1) to use this be careful that you do not have another window / tab of your browser using the microphone!
+  2) "On some browsers, like Chrome, using Speech Recognition on a web page involves a server-based recognition engine.
+    Your audio is sent to a web service for recognition processing, so it won't work offline."
+    (https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)
+    Use localhost!
+    (if do not have a server... do: `npm install` then `npm start`)
+   */
 
+  (() => {
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const speechRecognition = new SpeechRecognition();
+
+    // Interim results are results that are not yet final (e.g. the SpeechRecognitionResult.isFinal property is false.)
+    speechRecognition.interimResults = true;
+    speechRecognition.lang = 'zh';
+
+    const words = document.querySelector('.words');
+
+    let p = document.createElement('p');
+    words.appendChild(p);
+
+    function toText(e) {
+      /*
+      e.results looks like:
+      {SpeechRecognitionResult:
+        {
+         SpeechRecognitionAlternative: {
+          confidence: 0.8999999,
+          transcript: "word1"
+          },
+         isFinal: false,
+         length: 1
+        },
+       SpeechRecognitionResult:
+        {
+         SpeechRecognitionAlternative: {
+          confidence: 0.00000999999,
+          transcript: "word2"
+          },
+         isFinal: false,
+         length: 1
+        },
+        ...
+       }
+       */
+      p.innerText = Array.from(e.results)
+              .map(speechRecogRes => speechRecogRes[0].transcript)
+              .join("");
+
+      // create a new paragraph when the user stops talking
+      if (e.results[0].isFinal) {
+        p = document.createElement('p');
+        words.appendChild(p);
+      }
+    }
+
+    speechRecognition.addEventListener('result', toText);
+
+    // restart the speechRecognition when it ends
+    speechRecognition.addEventListener('end', speechRecognition.start);
+
+    document.onload = speechRecognition.start();
+  })();
 
 </script>
 
