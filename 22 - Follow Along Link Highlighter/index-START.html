@@ -26,7 +26,45 @@
     </div>
 
   <script>
-    // 👀👀👀👀👀👀👀👀👀👀👀👀👀👀👀
+    (() => {
+      const links = document.querySelectorAll('a');
+
+      const highlightSpan = document.createElement('span');
+      highlightSpan.classList.add('highlight');
+      document.body.append(highlightSpan);
+
+      function highlightLink() {
+        const domRect = this.getBoundingClientRect();
+
+        /*
+        https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+
+        The amount of scrolling that has been done of the viewport area (or any other scrollable element)
+        is taken into account when computing the bounding rectangle.
+        This means that the rectangle's boundary edges (top, right, bottom, left)
+        change their values every time the scrolling position changes
+        (because their values are relative to the viewport and not absolute).
+
+        If you need the bounding rectangle relative to the top-left corner of the document,
+        just add the current scrolling position to the top and left properties
+        (these can be obtained using window.scrollX and window.scrollY) to get
+        a bounding rectangle which is independent from the current scrolling position.
+         */
+        const customStyle = {
+          width: domRect.width,
+          height: domRect.height,
+          top: domRect.top + window.scrollY,
+          left: domRect.left + window.scrollX
+        };
+
+        highlightSpan.style.width = `${customStyle.width}px`;
+        highlightSpan.style.height = `${customStyle.height}px`;
+        // use translate here to get the smooth transition working
+        highlightSpan.style.transform = `translate(${customStyle.left}px, ${customStyle.top}px)`;
+      }
+
+      links.forEach(a => a.addEventListener('mouseenter', highlightLink));
+    })();
   </script>
 </body>
 </html>
