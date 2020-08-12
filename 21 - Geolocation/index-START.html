@@ -14,6 +14,15 @@
     <span class="units">KM/H</span>
   </h1>
 
+  <h2>
+      <span>Latitude: </span>
+      <span id="lat">0</span>
+  </h2>
+  <h2>
+    <span>Longitude: </span>
+    <span id="long">0</span>
+  </h2>
+
   <style>
     html {
       font-size: 100px;
@@ -53,12 +62,44 @@
       align-items: center;
     }
 
+    h2 {
+      color: white;
+      font-weight: 100;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      margin: 10px;
+    }
+
     .units {
       font-size: 15px;
     }
     /*Compass: https://thenounproject.com/search/?q=compass&i=592352*/
   </style>
   <script>
+    const speedMeter = document.querySelector('.speed-value');
+    const compass = document.querySelector('.arrow');
+    const long = document.getElementById('long');
+    const lat = document.getElementById('lat');
+
+    function changePos(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      const heading = position.coords.heading ?　position.coords.heading : 0;  // degree to north
+      const speed = position.coords.speed ? position.coords.speed : 0;  // km/h
+
+      speedMeter.innerHTML = speed;
+      compass.style.transform = `rotate(${heading}deg)`;
+      long.innerHTML = longitude.toString();
+      lat.innerHTML = latitude.toString();
+    }
+
+    function handleErr(err) {
+      window.alert('Please allow the location!');
+    }
+
+    navigator.geolocation.watchPosition(changePos, handleErr);
+
   </script>
 </body>
 </html>
