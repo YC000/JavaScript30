@@ -54,6 +54,49 @@
   </div>
 
 <script>
+  (() => {
+    // Note: you can use
+    // position: sticky;
+    // position: -webkit-sticky; /* Safari */
+    // for this as well, but there are several drawbacks such as:
+    //  1) it adds extra space at the top or around the element on some browsers:
+    //         see https://stackoverflow.com/questions/56200160/remove-unwanted-space-with-position-sticky
+    //         and https://stackoverflow.com/questions/42804714/position-sticky-adds-some-space-around-element-in-chrome
+    //  2) it is not supported on all browsers: https://medium.com/@elad/css-position-sticky-how-it-really-works-54cd01dc2d46
+    //
+    // This implementation imitates the functionality of position sticky (turn an element's position from relative to fixed)
+
+    const nav = document.getElementById('main');
+    const navTop = nav.offsetTop;
+
+    function fixNav() {
+      console.log("navTop", navTop);
+      console.log(window.scrollY);
+
+      if (window.scrollY >= navTop) {
+
+        // this is because the position will go from relative (height in dom) to fixed (floating)
+        // so there will be a jerking motion if the height is not modified
+        // can hardcode this in the css but offset height may change
+        document.body.style.paddingTop = `${nav.offsetHeight}px`;
+
+        // can also use:
+        // nav.classList.add() ...
+        // but we would like for the effect to cascade across the whole body
+        // (so in style.css it can define what happens with 2 classes)
+        document.body.classList.add("sticky-nav");
+
+      } else {
+        document.body.style.paddingTop = '0px';
+
+        document.body.classList.remove("sticky-nav");
+      }
+    }
+
+    document.addEventListener('scroll', fixNav);
+
+    window.addEventListener('resize', () => window.location.reload());
+  })();
 
 </script>
 
