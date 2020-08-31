@@ -42,7 +42,40 @@
 
 <button></button>
 <script>
+  (() => {
+    /*
+    Capture:
+      capture where you click and store them, from top down.
 
+    Bubbling:
+      ripple the click all the way up the parent elements to the
+      top of the document.
+
+    In modern browsers, it does a capture (capture where you click and store them,
+    from top down) of all the event, then starts at the bottom to do bubbling
+    (triggering events to the top)
+     */
+
+    const divs = document.querySelectorAll('body div');
+
+    function logText(e) {
+      console.log(this.classList.value);
+
+      // stop bubbling the event to the way up (or down if capture: true)
+      // e.stopPropagation();
+    }
+
+    // capture: true runs the function logText on the way down
+
+    // once means removeEventListener once it got one (unbinds itself),
+    // i.e. run logText once and never run it again
+    // useful for, for example, form submission, store checkouts,
+    // where you only want the user to submit once
+    divs.forEach(div => div.addEventListener('click', logText, {
+      capture: true,
+      once: true
+    }));
+  })();
 </script>
 </body>
 </html>
